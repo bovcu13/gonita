@@ -1,0 +1,125 @@
+/*
+	https://documentation.bonitasoft.com/bonita/2021.2/api/bpm-api
+*/
+package bpm
+
+import (
+	"encoding/json"
+	"log"
+
+	"bitbucket.org/wisdomfish/gonita"
+)
+
+// Start-Form
+// /bonita/API/bpm/process/[ProcessId]/instantiation
+// [ProcessId] == 表單編號
+// return caseId
+func (b *BPMClient) StartForm(processID string, body string) string {
+
+	url := main.route_bpm + "process/" + processID + "/instantiation"
+
+	main.BC.GetRequest()
+	resp, err := main.Request.SetBody(body).Post(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return string(resp.Body())
+}
+
+// Start-Order-Form
+// /bonita/API/bpm/process/[ProcessId]/instantiation
+// [ProcessId] == 表單編號
+// return caseId
+func (b *BPMClient) StartOrderForm(assistant string, recipient string) string {
+
+	url := b.server + "API/bpm/process/" + "8759976868088592450" + "/instantiation"
+
+	modelInput := &OrderModelInput{assistant, recipient}
+
+	body := &OrderForm{modelInput}
+
+	marshal, _ := json.MarshalIndent(body, "", "\t")
+
+	main.BC.GetRequest()
+	resp, err := main.Request.SetBody(marshal).Post(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return string(resp.Body())
+}
+
+
+
+// 取得該單據待執行詳細資料
+func (b *BPMClient) GetDetailCase(case_id string) string {
+
+	url := b.server + "API/bpm/humanTask?f=caseId=" + case_id
+	resp, err := b.client.R().
+		Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return string(resp.Body())
+}
+
+// 取得該單據已完成任務之資料
+func (b *BPMClient) GetFinishCase(case_id string) string {
+	//
+	url := b.server + "API/bpm/archivedTask?f=caseId=" + case_id
+	resp, err := b.client.R().
+		Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return string(resp.Body())
+}
+
+// 取得已完成任務之狀態描述
+func (b *BPMClient) GetFinishCaseState(sourceObjectId string) string {
+	//
+	url := b.server + "API/bpm/archivedHumanTask?f=sourceObjectId=" + sourceObjectId
+	resp, err := b.client.R().
+		Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return string(resp.Body())
+}
+
+// 取得該流程所有單況
+func (b *BPMClient) GetAllProcessCase(c string, processId string) string {
+	//
+	url := b.server + "API/bpm/case?c=" + c + "&f=processDefinitionId=" + processId
+	resp, err := b.client.R().
+		Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return string(resp.Body())
+}
+
+// 審核任務
+func (b *BPMClient) ReviewCase(task_id string, body string) string {
+	//
+	url := b.server + "API/bpm/userTask/" + task_id + "/execution?assign=true"
+	resp, err := b.client.R().
+		SetHeaders(map[string]string{
+			"Content-Type":       "application/json",
+			"X-Bonita-API-Token": b.token,
+		}).
+		SetBody(body).
+		Post(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return string(resp.Body())
+}
+
+// userTask/(TaskId)/execution?assign=true
