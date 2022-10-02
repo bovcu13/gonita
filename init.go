@@ -18,7 +18,7 @@ func init() {
 // TODO: Need chanage to Variables of Environment
 var (
 	user_ppassword = "bpm"
-	server_ip_port = "localhost:35253"
+	server_ip_port = "localhost:8082"
 )
 
 // sources := fmt.Sprintf(server_addr,

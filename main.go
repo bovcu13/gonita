@@ -157,7 +157,6 @@ func (b *BPMClient) GetUserId() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer
 	//log.Printf("GetUserId() - b.request:\n %+v", b.request)
 	log.Println("GetUserId() - Status Code:", resp.StatusCode())
 
